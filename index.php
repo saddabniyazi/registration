@@ -1,20 +1,35 @@
 <?php
-// If form is submitted, capture the data
+$jsonFile = "data.json";
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $name = htmlspecialchars($_POST["name"]);
-    $email = htmlspecialchars($_POST["email"]);
-    $mobile = htmlspecialchars($_POST["mobile"]);
-    $gender = htmlspecialchars($_POST["gender"]);
-    $course = htmlspecialchars($_POST["course"]);
-    $password = htmlspecialchars($_POST["password"]);
+    $data = [
+        "name" => htmlspecialchars($_POST["name"]),
+        "email" => htmlspecialchars($_POST["email"]),
+        "mobile" => htmlspecialchars($_POST["mobile"]),
+        "gender" => htmlspecialchars($_POST["gender"]),
+        "course" => htmlspecialchars($_POST["course"]),
+        "dob" => htmlspecialchars($_POST["dob"]),
+        "address" => htmlspecialchars($_POST["address"]),
+        "password" => htmlspecialchars($_POST["password"])
+    ];
+
+    if (file_exists($jsonFile)) {
+        $jsonData = json_decode(file_get_contents($jsonFile), true);
+    } else {
+        $jsonData = [];
+    }
+
+    $jsonData[] = $data;
+    file_put_contents($jsonFile, json_encode($jsonData, JSON_PRETTY_PRINT));
 
     echo "<div style='max-width:500px;margin:50px auto;padding:20px;background:#e9f4ff;border-radius:12px;box-shadow:0 0 10px rgba(0,0,0,0.1);font-family:Poppins,sans-serif;'>
             <h2 style='color:#0077cc;text-align:center;'>Registration Successful 🎉</h2>
-            <p><b>Name:</b> $name</p>
-            <p><b>Email:</b> $email</p>
-            <p><b>Mobile:</b> $mobile</p>
-            <p><b>Gender:</b> $gender</p>
-            <p><b>Course:</b> $course</p>
+            <p><b>Name:</b> {$data['name']}</p>
+            <p><b>Email:</b> {$data['email']}</p>
+            <p><b>Mobile:</b> {$data['mobile']}</p>
+            <p><b>Gender:</b> {$data['gender']}</p>
+            <p><b>Course:</b> {$data['course']}</p>
+            <p><b>Date of Birth:</b> {$data['dob']}</p>
+            <p><b>Address:</b> {$data['address']}</p>
           </div>";
     exit();
 }
@@ -43,13 +58,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         border-radius: 15px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         width: 350px;
+        overflow-y: auto;
+        max-height: 90vh;
     }
     h2 {
         text-align: center;
         color: #0077cc;
         margin-bottom: 25px;
     }
-    input, select {
+    input, select, textarea {
         width: 100%;
         padding: 10px;
         margin: 10px 0;
@@ -57,7 +74,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         border: 1px solid #ccc;
         font-size: 15px;
     }
-    input:focus {
+    input:focus, textarea:focus {
         border-color: #0077cc;
         outline: none;
     }
@@ -98,6 +115,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <option>BCA</option>
             <option>MCA</option>
         </select>
+        <input type="date" name="dob" required>
+        <textarea name="address" placeholder="Enter Address" rows="3" required></textarea>
         <input type="password" name="password" placeholder="Create Password" required>
         <button type="submit">Register</button>
     </form>
